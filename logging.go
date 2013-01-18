@@ -1,3 +1,4 @@
+// Package logging implements a lightweight and configurable logging system.
 package logging
 
 import (
