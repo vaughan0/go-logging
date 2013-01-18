@@ -1,15 +1,17 @@
 package logging
 
 import (
-	"os"
-	"io"
 	"errors"
+	"io"
+	"os"
 	"strconv"
 )
 
 // A WriterPlugin implements OutputPlugin by using a function to choose an io.Writer.
 type WriterPlugin func(options map[string]string) (writer io.Writer, err error)
 
+// Creates and returns a new StringOutputter. The format is taken from the "format" option, which must exist. The output
+// StringWriter is obtained by calling the WriterPlugin (which is a function).
 func (chooser WriterPlugin) CreateOutputter(options map[string]string) (result Outputter, err error) {
 
 	// Setup formatter
@@ -26,7 +28,7 @@ func (chooser WriterPlugin) CreateOutputter(options map[string]string) (result O
 	}
 
 	return StringOutputter{
-		Writer: IOWriter{output},
+		Writer:    IOWriter{output},
 		Formatter: formatter,
 	}, nil
 }
@@ -55,7 +57,7 @@ var filePlugin = WriterPlugin(func(options map[string]string) (output io.Writer,
 	if path == "" {
 		err = errors.New("file option not specified")
 	} else {
-		output, err = os.OpenFile(path, os.O_WRONLY | os.O_APPEND | os.O_CREATE, 0644)
+		output, err = os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	}
 	return
 })
