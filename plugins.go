@@ -17,7 +17,6 @@ func (chooser WriterPlugin) CreateOutputter(options map[string]string) (result O
 	if format == "" {
 		return nil, errors.New("console formatting string not specified")
 	}
-	format += "\n"
 	formatter := NewBasicFormatter(format)
 
 	// Determine output stream to use

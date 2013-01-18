@@ -26,14 +26,14 @@ func (s StringOutputter) Output(msg *Message) {
 	s.Writer.Write(s.Formatter.Format(msg))
 }
 
-// IOWriter implements StringWriter by writing to an io.Writer.
+// IOWriter implements StringWriter by writing lines to an io.Writer.
 type IOWriter struct {
 	Writer io.Writer
 }
 
 // Implements StringWriter.
 func (w IOWriter) Write(str string) {
-	io.WriteString(w.Writer, str)
+	io.WriteString(w.Writer, str+"\n")
 	if bufout, ok := w.Writer.(*bufio.Writer); ok {
 		bufout.Flush()
 	}
