@@ -66,6 +66,11 @@ vaughan0 = FATAL
 type = console
 stream = stderr
 format = $time $level: ($file:$line) $msg
+
+[logfile]
+type = file
+file = logging-is-fun.txt
+format = $time $level ($logger) $msg
 ```
 
 If you load that file and run the code from "Getting Started", you will get output similar to the following:
