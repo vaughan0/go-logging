@@ -76,11 +76,9 @@ func newOutputterConfig(config ini.Section) (Outputter, error) {
 func (c Config) apply() (err error) {
 
 	// Create outputters
-	const keyPrefix = "output_"
 	outputters := make(map[string]Outputter)
 	for key, section := range c {
-		if strings.HasPrefix(key, keyPrefix) {
-			key = key[len(keyPrefix):]
+		if key != "loggers" && key != "" {
 			var output Outputter
 			if output, err = newOutputterConfig(section); err != nil {
 				return
