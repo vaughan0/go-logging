@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type Config ini.File
+type config ini.File
 
 // ErrTypeNotSpecified is returned when an output section does not contain a "type" option.
 var ErrTypeNotSpecified = errors.New("plugin name not specified")
@@ -73,7 +73,7 @@ func newOutputterConfig(config ini.Section) (Outputter, error) {
 }
 
 // Applies configuration to the logging hierarchy.
-func (c Config) apply() (err error) {
+func (c config) apply() (err error) {
 
 	// Create outputters
 	outputters := make(map[string]Outputter)
@@ -128,12 +128,12 @@ func (c Config) apply() (err error) {
 }
 
 // Configures the logging hierarchy from an io.Reader, which should return valid INI source code.
-func SetupReader(config io.Reader) (err error) {
-	file, err := ini.Load(config)
+func SetupReader(input io.Reader) (err error) {
+	file, err := ini.Load(input)
 	if err != nil {
 		return
 	}
-	return Config(file).apply()
+	return config(file).apply()
 }
 
 // Configures the logging hierarchy from an INI file.
@@ -160,4 +160,14 @@ func MustSetup() {
 	if err := Setup(); err != nil {
 		panic(err)
 	}
+}
+
+// Sets up a minimal configuration that logs all messages to os.Stderr.
+func DefaultSetup() {
+	Root.Threshold = Trace
+	Root.AddOutput(StringOutputter{
+		Writer: IOWriter{os.Stderr},
+		Formatter: NewBasicFormatter("[$level] $datetime - $msg"),
+	})
+	configured = true
 }
