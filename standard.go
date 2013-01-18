@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"bufio"
 	"bytes"
 	"io"
 	"path"
@@ -33,6 +34,9 @@ type IOWriter struct {
 // Implements StringWriter.
 func (w IOWriter) Write(str string) {
 	io.WriteString(w.Writer, str)
+	if bufout, ok := w.Writer.(*bufio.Writer); ok {
+		bufout.Flush()
+	}
 }
 
 // ThresholdOutputter wraps an Outputter and only forwards messages that meet a certain threshold level.

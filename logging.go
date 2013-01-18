@@ -32,6 +32,13 @@ var levelStrings = map[Level]string{
 	Debug:  "DEBUG",
 	Trace:  "TRACE",
 }
+var reverseLevelStrings = make(map[string]Level)
+
+func init() {
+	for level, key := range levelStrings {
+		reverseLevelStrings[key] = level
+	}
+}
 
 // Returns a string representation of the Level, in uppercase.
 func (l Level) String() string {
@@ -134,6 +141,7 @@ func (l *Logger) configure() {
 /* Global logger hierarchy */
 
 var lock sync.Mutex
+var configured bool
 
 // The root Logger. This is the ancestor of all loggers.
 var Root = newLogger("root", nil)
@@ -150,7 +158,9 @@ func Get(fullname string) *Logger {
 		child := logger.children[part]
 		if child == nil {
 			child = newLogger(fullname, logger)
-			child.Threshold = logger.Threshold
+			if configured {
+				child.Threshold = logger.Threshold
+			}
 			logger.children[part] = child
 		}
 		logger = child
