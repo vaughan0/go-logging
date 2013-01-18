@@ -48,7 +48,7 @@ Configuring
 -----------
 
 go-logging is configured by using a simple INI file. The easiest way to do this is to call logging.MustSetup(), which
-will parse the INI file specified by the GO_LOGGING_CONFIG_ environment variable.
+will parse the INI file specified by the _GO_LOGGING_CONFIG_ environment variable.
 
 Here is an example configuration file:
 
