@@ -138,11 +138,11 @@ func SetupReader(config io.Reader) (err error) {
 
 // Configures the logging hierarchy from an INI file.
 func SetupFile(filename string) (err error) {
-	file, err := ini.LoadFile(filename)
+	file, err := os.Open(filename)
 	if err != nil {
 		return
 	}
-	return Config(file).apply()
+	return SetupReader(file)
 }
 
 // Automatically configures the logging hierarchy by loading the INI file specified by the GO_LOGGING_CONFIG environment
@@ -153,4 +153,11 @@ func Setup() (err error) {
 		return errors.New("GO_LOGGING_CONFIG not set")
 	}
 	return SetupFile(path)
+}
+
+// Like Setup, but panics if an error occurs.
+func MustSetup() {
+	if err := Setup(); err != nil {
+		panic(err)
+	}
 }
