@@ -14,14 +14,14 @@ import (
 type Level int
 
 const (
-	Undefined = 0
-	Fatal     = (-iota * 100) - 1 // Unrecoverable error.
-	Error                         // Error condition, but possibly recoverable.
-	Warn                          // Warning condition, program can still operate.
-	Notice                        // Normal but significant condition.
-	Info                          // Informational message.
-	Debug                         // Debug-level message.
-	Trace                         // More verbose debug-level message.
+	Undefined Level = 0
+	Fatal           = (-iota * 100) - 1 // Unrecoverable error.
+	Error                               // Error condition, but possibly recoverable.
+	Warn                                // Warning condition, program can still operate.
+	Notice                              // Normal but significant condition.
+	Info                                // Informational message.
+	Debug                               // Debug-level message.
+	Trace                               // More verbose debug-level message.
 )
 
 var levelStrings = map[Level]string{
@@ -72,6 +72,7 @@ type Outputter interface {
 
 type OutputterFunc func(msg *Message)
 
+// Implements Outputter.
 func (o OutputterFunc) Output(msg *Message) {
 	o(msg)
 }
@@ -97,9 +98,9 @@ type Logger struct {
 
 func newLogger(name string, parent *Logger) *Logger {
 	return &Logger{
-		Name:      name,
-		parent:    parent,
-		children:  make(map[string]*Logger),
+		Name:     name,
+		parent:   parent,
+		children: make(map[string]*Logger),
 	}
 }
 

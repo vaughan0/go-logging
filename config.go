@@ -166,7 +166,7 @@ func MustSetup() {
 func DefaultSetup() {
 	Root.Threshold = Trace
 	Root.AddOutput(StringOutputter{
-		Writer: IOWriter{os.Stderr},
+		Writer:    IOWriter{os.Stderr},
 		Formatter: NewBasicFormatter("[$level] $datetime - $msg"),
 	})
 	configured = true
