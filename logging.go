@@ -13,13 +13,14 @@ import (
 type Level int
 
 const (
-	Fatal  = -iota * 100 // Unrecoverable error.
-	Error                // Error condition, but possibly recoverable.
-	Warn                 // Warning condition, program can still operate.
-	Notice               // Normal but significant condition.
-	Info                 // Informational message.
-	Debug                // Debug-level message.
-	Trace                // More verbose debug-level message.
+	Undefined = 0
+	Fatal     = (-iota * 100) - 1 // Unrecoverable error.
+	Error                         // Error condition, but possibly recoverable.
+	Warn                          // Warning condition, program can still operate.
+	Notice                        // Normal but significant condition.
+	Info                          // Informational message.
+	Debug                         // Debug-level message.
+	Trace                         // More verbose debug-level message.
 )
 
 var levelStrings = map[Level]string{
@@ -86,10 +87,9 @@ type Logger struct {
 	outputs     []Outputter
 }
 
-func newLogger(name string, parent *Logger, threshold Level) *Logger {
+func newLogger(name string, parent *Logger) *Logger {
 	return &Logger{
 		Name:      name,
-		Threshold: threshold,
 		parent:    parent,
 		children:  make(map[string]*Logger),
 	}
@@ -121,12 +121,22 @@ func (l *Logger) AddOutput(o Outputter) {
 	l.outputs = append(l.outputs, o)
 }
 
+// Recursively makes child loggers with Undefined thresholds inherit their threshold from their parents.
+func (l *Logger) configure() {
+	for _, child := range l.children {
+		if child.Threshold == Undefined {
+			child.Threshold = l.Threshold
+		}
+		child.configure()
+	}
+}
+
 /* Global logger hierarchy */
 
 var lock sync.Mutex
 
 // The root Logger. This is the ancestor of all loggers.
-var Root = newLogger("root", nil, Info)
+var Root = newLogger("root", nil)
 
 // Returns a Logger instance for the given logger name. A logger name consists of dot-separated parts, and is the basis
 // of the logger hierarchy. When loggers are created (implicitly by Get) they inherit their Threshold from
@@ -139,7 +149,8 @@ func Get(fullname string) *Logger {
 	for _, part := range parts {
 		child := logger.children[part]
 		if child == nil {
-			child = newLogger(fullname, logger, logger.Threshold)
+			child = newLogger(fullname, logger)
+			child.Threshold = logger.Threshold
 			logger.children[part] = child
 		}
 		logger = child
