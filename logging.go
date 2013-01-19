@@ -172,11 +172,11 @@ func Get(fullname string) *Logger {
 
 /* Logging methods */
 
-func (l *Logger) Log(level Level, msgstr string) {
+func (l *Logger) Log(level Level, msgparts ...interface{}) {
 	if l.Threshold > level {
 		return
 	}
-	l.log(level, msgstr, 2)
+	l.log(level, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Logf(level Level, format string, args ...interface{}) {
 	if l.Threshold > level {
@@ -185,11 +185,11 @@ func (l *Logger) Logf(level Level, format string, args ...interface{}) {
 	l.log(level, fmt.Sprintf(format, args...), 2)
 }
 
-func (l *Logger) Fatal(msg string) {
+func (l *Logger) Fatal(msgparts ...interface{}) {
 	if l.Threshold > Fatal {
 		return
 	}
-	l.log(Fatal, msg, 2)
+	l.log(Fatal, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	if l.Threshold > Fatal {
@@ -197,11 +197,11 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 	}
 	l.log(Fatal, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Error(msg string) {
+func (l *Logger) Error(msgparts ...interface{}) {
 	if l.Threshold > Error {
 		return
 	}
-	l.log(Error, msg, 2)
+	l.log(Error, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Errorf(format string, args ...interface{}) {
 	if l.Threshold > Error {
@@ -209,11 +209,11 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 	}
 	l.log(Error, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Warn(msg string) {
+func (l *Logger) Warn(msgparts ...interface{}) {
 	if l.Threshold > Warn {
 		return
 	}
-	l.log(Warn, msg, 2)
+	l.log(Warn, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Warnf(format string, args ...interface{}) {
 	if l.Threshold > Warn {
@@ -221,11 +221,11 @@ func (l *Logger) Warnf(format string, args ...interface{}) {
 	}
 	l.log(Warn, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Notice(msg string) {
+func (l *Logger) Notice(msgparts ...interface{}) {
 	if l.Threshold > Notice {
 		return
 	}
-	l.log(Notice, msg, 2)
+	l.log(Notice, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Noticef(format string, args ...interface{}) {
 	if l.Threshold > Notice {
@@ -233,11 +233,11 @@ func (l *Logger) Noticef(format string, args ...interface{}) {
 	}
 	l.log(Notice, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Info(msg string) {
+func (l *Logger) Info(msgparts ...interface{}) {
 	if l.Threshold > Info {
 		return
 	}
-	l.log(Info, msg, 2)
+	l.log(Info, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Infof(format string, args ...interface{}) {
 	if l.Threshold > Info {
@@ -245,11 +245,11 @@ func (l *Logger) Infof(format string, args ...interface{}) {
 	}
 	l.log(Info, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Debug(msg string) {
+func (l *Logger) Debug(msgparts ...interface{}) {
 	if l.Threshold > Debug {
 		return
 	}
-	l.log(Debug, msg, 2)
+	l.log(Debug, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Debugf(format string, args ...interface{}) {
 	if l.Threshold > Debug {
@@ -257,11 +257,11 @@ func (l *Logger) Debugf(format string, args ...interface{}) {
 	}
 	l.log(Debug, fmt.Sprintf(format, args...), 2)
 }
-func (l *Logger) Trace(msg string) {
+func (l *Logger) Trace(msgparts ...interface{}) {
 	if l.Threshold > Trace {
 		return
 	}
-	l.log(Trace, msg, 2)
+	l.log(Trace, fmt.Sprint(msgparts...), 2)
 }
 func (l *Logger) Tracef(format string, args ...interface{}) {
 	if l.Threshold > Trace {
