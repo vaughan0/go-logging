@@ -42,6 +42,17 @@ func RegisterOutputPlugin(name string, plugin OutputPlugin) {
 	outputPlugins[name] = plugin
 }
 
+// Returns output plugin specified by name.
+func GetOutputPlugin(name string) (plugin OutputPlugin, err error) {
+	lock.Lock()
+	defer lock.Unlock()
+	plugin, ok := outputPlugins[name]
+	if !ok {
+		return nil, ErrUnknownPlugin(name)
+	}
+	return
+}
+
 // Loads the appropriate plugin and creates an outputter, given a configuration section.
 func newOutputterConfig(config ini.Section) (Outputter, error) {
 	// Get plugin from the "type" option
@@ -63,7 +74,7 @@ func newOutputterConfig(config ini.Section) (Outputter, error) {
 
 	// Check for the "threshold" option
 	if thresh, ok := config["threshold"]; ok {
-		if level, ok := reverseLevelStrings[strings.ToUpper(thresh)]; ok {
+		if level, ok := ReverseLevelStrings[strings.ToUpper(thresh)]; ok {
 			output = ThresholdOutputter{level, output}
 		} else {
 			return nil, errors.New("invalid threshold: " + thresh)
@@ -95,7 +106,7 @@ func (c config) apply() (err error) {
 	// Setup loggers
 	for name, config := range loggerSection {
 		parts := strings.Split(config, ",")
-		level, ok := reverseLevelStrings[strings.ToUpper(parts[0])]
+		level, ok := ReverseLevelStrings[strings.ToUpper(parts[0])]
 		if !ok {
 			return errors.New("unknown logging level: " + parts[0])
 		}
@@ -122,7 +133,7 @@ func (c config) apply() (err error) {
 		}
 	}
 
-	Root.configure()
+	Root.Configure()
 	configured = true
 	return nil
 }
@@ -169,5 +180,10 @@ func DefaultSetup() {
 		Writer:    IOWriter{os.Stderr},
 		Formatter: NewBasicFormatter("[$level] $datetime - $msg"),
 	})
+	configured = true
+}
+
+// Just mark setup as completed, assuming that it was performed already
+func CustomSetup() {
 	configured = true
 }
