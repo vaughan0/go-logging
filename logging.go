@@ -24,7 +24,7 @@ const (
 	Trace                               // More verbose debug-level message.
 )
 
-var levelStrings = map[Level]string{
+var LevelStrings = map[Level]string{
 	Fatal:  "FATAL",
 	Error:  "ERROR",
 	Warn:   "WARN",
@@ -33,17 +33,17 @@ var levelStrings = map[Level]string{
 	Debug:  "DEBUG",
 	Trace:  "TRACE",
 }
-var reverseLevelStrings = make(map[string]Level)
+var ReverseLevelStrings = make(map[string]Level)
 
 func init() {
-	for level, key := range levelStrings {
-		reverseLevelStrings[key] = level
+	for level, key := range LevelStrings {
+		ReverseLevelStrings[key] = level
 	}
 }
 
 // Returns a string representation of the Level, in uppercase.
 func (l Level) String() string {
-	if s := levelStrings[l]; s != "" {
+	if s := LevelStrings[l]; s != "" {
 		return s
 	}
 	return fmt.Sprintf("LEVEL:%d", l)
@@ -131,12 +131,12 @@ func (l *Logger) AddOutput(o Outputter) {
 }
 
 // Recursively makes child loggers with Undefined thresholds inherit their threshold from their parents.
-func (l *Logger) configure() {
+func (l *Logger) Configure() {
 	for _, child := range l.children {
 		if child.Threshold == Undefined {
 			child.Threshold = l.Threshold
 		}
-		child.configure()
+		child.Configure()
 	}
 }
 
