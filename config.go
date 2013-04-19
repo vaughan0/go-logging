@@ -8,7 +8,15 @@ import (
 	"strings"
 )
 
-type config ini.File
+type Config interface {
+	LoggerSettings() map[string]string
+	Plugins() []PluginConfig
+}
+
+type PluginConfig struct {
+	Name    string
+	Options map[string]string
+}
 
 // ErrTypeNotSpecified is returned when an output section does not contain a "type" option.
 var ErrTypeNotSpecified = errors.New("plugin name not specified")
@@ -43,7 +51,7 @@ func RegisterOutputPlugin(name string, plugin OutputPlugin) {
 }
 
 // Loads the appropriate plugin and creates an outputter, given a configuration section.
-func newOutputterConfig(config ini.Section) (Outputter, error) {
+func newOutputterConfig(config map[string]string) (Outputter, error) {
 	// Get plugin from the "type" option
 	name, ok := config["type"]
 	if !ok {
@@ -72,28 +80,20 @@ func newOutputterConfig(config ini.Section) (Outputter, error) {
 	return output, nil
 }
 
-// Applies configuration to the logging hierarchy.
-func (c config) apply() (err error) {
+func SetupConfig(config Config) (err error) {
 
 	// Create outputters
 	outputters := make(map[string]Outputter)
-	for key, section := range c {
-		if key != "loggers" && key != "" {
-			var output Outputter
-			if output, err = newOutputterConfig(section); err != nil {
-				return
-			}
-			outputters[key] = output
+	for _, pluginCfg := range config.Plugins() {
+		var output Outputter
+		if output, err = newOutputterConfig(pluginCfg.Options); err != nil {
+			return
 		}
-	}
-
-	loggerSection := c["loggers"]
-	if loggerSection == nil {
-		return errors.New("loggers section not specified")
+		outputters[pluginCfg.Name] = output
 	}
 
 	// Setup loggers
-	for name, config := range loggerSection {
+	for name, config := range config.LoggerSettings() {
 		parts := strings.Split(config, ",")
 		level, ok := reverseLevelStrings[strings.ToUpper(parts[0])]
 		if !ok {
@@ -127,13 +127,30 @@ func (c config) apply() (err error) {
 	return nil
 }
 
+type IniConfig ini.File
+
+func (i IniConfig) LoggerSettings() map[string]string {
+	return i["loggers"]
+}
+func (i IniConfig) Plugins() (plugins []PluginConfig) {
+	for key, options := range i {
+		if key != "loggers" && key != "" {
+			plugins = append(plugins, PluginConfig{
+				Name:    key,
+				Options: options,
+			})
+		}
+	}
+	return
+}
+
 // Configures the logging hierarchy from an io.Reader, which should return valid INI source code.
 func SetupReader(input io.Reader) (err error) {
 	file, err := ini.Load(input)
 	if err != nil {
 		return
 	}
-	return config(file).apply()
+	return SetupConfig(IniConfig(file))
 }
 
 // Configures the logging hierarchy from an INI file.
