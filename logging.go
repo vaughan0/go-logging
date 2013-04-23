@@ -143,6 +143,7 @@ func (l *Logger) configure() {
 /* Global logger hierarchy */
 
 var lock sync.Mutex
+var loggers map[string]*Logger
 var configured bool
 
 // The root Logger. This is the ancestor of all loggers.
@@ -153,6 +154,11 @@ var Root = newLogger("root", nil)
 func Get(fullname string) *Logger {
 	lock.Lock()
 	defer lock.Unlock()
+	if loggers != nil {
+		if logger := loggers[fullname]; logger != nil {
+			return logger
+		}
+	}
 	// Go down the hierarchy, creating loggers where needed
 	parts := strings.Split(fullname, ".")
 	logger := Root
@@ -167,6 +173,10 @@ func Get(fullname string) *Logger {
 		}
 		logger = child
 	}
+	if loggers == nil {
+		loggers = make(map[string]*Logger)
+	}
+	loggers[fullname] = logger
 	return logger
 }
 
