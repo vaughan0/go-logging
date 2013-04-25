@@ -186,5 +186,6 @@ func DefaultSetup() {
 		Writer:    IOWriter{os.Stderr},
 		Formatter: NewBasicFormatter("[$level] $datetime - $msg"),
 	})
+	Root.configure()
 	configured = true
 }
