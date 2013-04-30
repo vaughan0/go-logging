@@ -57,7 +57,7 @@ Here is an example configuration file:
 [loggers]
 # By default, only messages with a level of INFO or higher will be logged.
 # The default output is the "console" output, which will be defined in the next section.
-root = INFO,console
+root = INFO, console
 # Turn off all messages except FATAL ones from any loggers from vaughan0's libraries.
 vaughan0 = FATAL
 
@@ -97,9 +97,9 @@ Example of nopropagate:
 ```ini
 [loggers]
 # A's messages (with levels of INFO or higher) will be sent to the "console" output
-A=INFO,console
+A = INFO, console
 # B's messages will be sent exclusively to the "special" output
-A.B=TRACE,special,nopropagate
+A.B = TRACE, special, nopropagate
 # All of A.C's messages (of any level) will be sent to the "console" output
-A.C=TRACE
+A.C = TRACE
 ```

@@ -95,6 +95,9 @@ func SetupConfig(config Config) (err error) {
 	// Setup loggers
 	for name, config := range config.LoggerSettings() {
 		parts := strings.Split(config, ",")
+		for i, part := range parts {
+			parts[i] = strings.TrimSpace(part)
+		}
 		level, ok := reverseLevelStrings[strings.ToUpper(parts[0])]
 		if !ok {
 			return errors.New("unknown logging level: " + parts[0])
