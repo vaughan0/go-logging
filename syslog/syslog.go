@@ -1,7 +1,8 @@
-package logging
+package syslog
 
 import (
 	"errors"
+	"github.com/vaughan0/go-logging"
 	"log/syslog"
 	"strings"
 )
@@ -9,11 +10,11 @@ import (
 // SyslogOutputter implements Outputter by logging to the system log daemon.
 type SyslogOutputter struct {
 	Writer    *syslog.Writer
-	Formatter Formatter
+	Formatter logging.Formatter
 }
 
 // Creates a new SyslogOutputter with a custom facility (see syslog.Priority).
-func NewSyslogFacility(format Formatter, tag string, facility syslog.Priority) (*SyslogOutputter, error) {
+func NewSyslogFacility(format logging.Formatter, tag string, facility syslog.Priority) (*SyslogOutputter, error) {
 	writer, err := syslog.New(facility, tag)
 	if err != nil {
 		return nil, err
@@ -25,25 +26,25 @@ func NewSyslogFacility(format Formatter, tag string, facility syslog.Priority) (
 }
 
 // Creates a new SyslogOutputter with a name (tag) and the USER facility.
-func NewSyslog(format Formatter, tag string) (*SyslogOutputter, error) {
+func NewSyslog(format logging.Formatter, tag string) (*SyslogOutputter, error) {
 	return NewSyslogFacility(format, tag, syslog.LOG_USER)
 }
 
 // Implements Outputter.
-func (s SyslogOutputter) Output(msg *Message) {
+func (s SyslogOutputter) Output(msg *logging.Message) {
 	str := s.Formatter.Format(msg)
 	switch msg.Level {
-	case Fatal:
+	case logging.Fatal:
 		s.Writer.Crit(str)
-	case Error:
+	case logging.Error:
 		s.Writer.Err(str)
-	case Warn:
+	case logging.Warn:
 		s.Writer.Warning(str)
-	case Notice:
+	case logging.Notice:
 		s.Writer.Notice(str)
-	case Info:
+	case logging.Info:
 		s.Writer.Info(str)
-	case Debug, Trace:
+	case logging.Debug, logging.Trace:
 		s.Writer.Debug(str)
 	default:
 		s.Writer.Notice(str)
@@ -73,7 +74,7 @@ var facilityMap = map[string]syslog.Priority{
 	"local7":   syslog.LOG_LOCAL7,
 }
 
-var syslogPlugin = OutputPluginFunc(func(options map[string]string) (result Outputter, err error) {
+var syslogPlugin = logging.OutputPluginFunc(func(options map[string]string) (result logging.Outputter, err error) {
 
 	// Setup formatter
 	format := options["format"]
@@ -93,9 +94,9 @@ var syslogPlugin = OutputPluginFunc(func(options map[string]string) (result Outp
 		}
 	}
 
-	return NewSyslogFacility(NewBasicFormatter(format), tag, facility)
+	return NewSyslogFacility(logging.NewBasicFormatter(format), tag, facility)
 })
 
 func init() {
-	RegisterOutputPlugin("syslog", syslogPlugin)
+	logging.RegisterOutputPlugin("syslog", syslogPlugin)
 }
