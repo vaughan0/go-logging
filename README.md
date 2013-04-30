@@ -1,7 +1,7 @@
 go-logging
 ==========
 
-Simple logging library for Go.
+Simple logging library for Go (golang).
 
 View the API documentation [here](http://godoc.org/github.com/vaughan0/go-logging).
 
