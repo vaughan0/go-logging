@@ -1,3 +1,4 @@
+// Package syslog provides a syslog plugin for go-logging.
 package syslog
 
 import (
