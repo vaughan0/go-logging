@@ -81,6 +81,7 @@ func newOutputterConfig(config map[string]string) (Outputter, error) {
 }
 
 func SetupConfig(config Config) (err error) {
+	resetLoggers()
 
 	// Create outputters
 	outputters := make(map[string]Outputter)

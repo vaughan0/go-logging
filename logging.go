@@ -104,6 +104,12 @@ func newLogger(name string, parent *Logger) *Logger {
 	}
 }
 
+func (l *Logger) reset() {
+	l.Threshold = Undefined
+	l.NoPropagate = false
+	l.outputs = nil
+}
+
 func (l *Logger) log(level Level, msgstr string, stack int) {
 	msg := &Message{
 		Level:  level,
@@ -178,6 +184,15 @@ func Get(fullname string) *Logger {
 	}
 	loggers[fullname] = logger
 	return logger
+}
+
+func resetLoggers() {
+	lock.Lock()
+	defer lock.Unlock()
+	for _, logger := range loggers {
+		logger.reset()
+	}
+	configured = false
 }
 
 /* Logging methods */
