@@ -65,6 +65,10 @@ type Message struct {
 	Logger *Logger
 }
 
+func (m *Message) String() string {
+	return m.Msg
+}
+
 // An Outputter is responsible for logging a message to some destination.
 type Outputter interface {
 	Output(msg *Message)
