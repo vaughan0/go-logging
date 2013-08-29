@@ -196,6 +196,7 @@ func resetLoggers() {
 	for _, logger := range loggers {
 		logger.reset()
 	}
+	Root.reset()
 	configured = false
 }
 
